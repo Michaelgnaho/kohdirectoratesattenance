@@ -36,9 +36,8 @@ export default function MeetingPage() {
     (att || []).forEach(a => { map[a.member_id] = a.present; });
     setPresent(map);
 
-    const base = typeof window !== 'undefined' ? window.location.origin : '';
-    const url = `${base}/checkin?code=${mt.session_code}`;
-    QRCode.toDataURL(url, { width: 120 }).then(setQrDataUrl).catch(() => {});
+    const url = `${window.location.origin}/checkin?code=${mt.session_code}`;
+    QRCode.toDataURL(url, { width: 240, margin: 1 }).then(setQrDataUrl).catch(() => {});
   }
 
   async function toggleCheckin() {
@@ -57,42 +56,48 @@ export default function MeetingPage() {
     setPresent({ ...present, [memberId]: value });
   }
 
-  if (checking || !meeting) return <main><p className="muted">Loading…</p></main>;
+  if (checking || !meeting) return <p className="muted">Loading…</p>;
 
   const presentCount = members.filter(m => present[m.id] === true).length;
+  const toggleBase = 'cursor-pointer rounded-lg border px-3 py-1.5 text-[13px]';
 
   return (
-    <main>
-      <Link href={`/manage/${meeting.directorate_id}`}>‹ Back to directorate</Link>
+    <>
+      <Link href={`/manage/${meeting.directorate_id}`} className="mb-3 inline-block font-semibold text-accent">‹ Back to directorate</Link>
       <div className="card">
         <h2>{meeting.title}</h2>
         <p className="muted">{meeting.date}</p>
-        <div className="row" style={{ marginTop: 10, justifyContent: 'space-between', background: 'var(--bg)', border: '1px solid var(--line)', borderRadius: 10, padding: '10px 12px' }}>
+
+        <div className="mt-2.5 flex items-center justify-between rounded-xl border border-line bg-bg px-3 py-2.5">
           <div>
             <div className="muted">Display this code at the venue</div>
-            <div style={{ fontSize: 22, fontWeight: 700, letterSpacing: 2 }}>{meeting.session_code}</div>
+            <div className="text-[22px] font-bold tracking-[2px]">{meeting.session_code}</div>
           </div>
-          {qrDataUrl && <img src={qrDataUrl} alt="Check-in QR code" style={{ background: '#fff', padding: 6, borderRadius: 8 }} />}
+          {qrDataUrl && <img src={qrDataUrl} alt="Check-in QR code" className="h-[120px] w-[120px] rounded-lg bg-white p-1.5" />}
         </div>
-        <button className={meeting.checkin_open ? '' : 'ghost'} style={{ width: '100%', marginTop: 8 }} onClick={toggleCheckin}>
+
+        <button className={`mt-2 w-full ${meeting.checkin_open ? 'btn' : 'btn-ghost'}`} onClick={toggleCheckin}>
           {meeting.checkin_open ? 'Check-in open · tap to close' : 'Check-in closed · tap to open'}
         </button>
-        <p className="muted" style={{ marginTop: 6 }}>{presentCount} of {members.length} marked present</p>
-        <div style={{ marginTop: 12 }}>
+        <p className="muted mt-1.5">{presentCount} of {members.length} marked present</p>
+
+        <div className="mt-3">
           {members.map(m => {
             const val = present[m.id];
             return (
               <div className="list-row" key={m.id}>
                 <span>{m.name} <span className="muted">· {m.role}</span></span>
-                <div className="toggle">
-                  <button className={val === true ? 'on-present' : ''} onClick={() => mark(m.id, true)}>Present</button>
-                  <button className={val === false ? 'on-absent' : ''} onClick={() => mark(m.id, false)}>Absent</button>
+                <div className="flex gap-1.5">
+                  <button onClick={() => mark(m.id, true)}
+                    className={`${toggleBase} ${val === true ? 'border-accent bg-accent text-accent-ink' : 'border-line bg-transparent text-sub'}`}>Present</button>
+                  <button onClick={() => mark(m.id, false)}
+                    className={`${toggleBase} ${val === false ? 'border-danger bg-danger text-white' : 'border-line bg-transparent text-sub'}`}>Absent</button>
                 </div>
               </div>
             );
           })}
         </div>
       </div>
-    </main>
+    </>
   );
 }

@@ -1,18 +1,16 @@
-import "./globals.css";
+import './globals.css';
 
 export const metadata = {
-  title: "PBATKOH — Attendance",
-  description: "Directorate meeting attendance",
+  title: 'Kadri Oba Obafemi — Attendance',
+  description: 'Directorate meeting attendance'
 };
 
-export default function RootLayout({
-  children,
-}: {
-  children: React.ReactNode;
-}) {
+export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
     <html lang="en">
-      <body>{children}</body>
+      <body>
+        <main className="mx-auto max-w-[640px] px-4 pb-10 pt-5">{children}</main>
+      </body>
     </html>
   );
 }

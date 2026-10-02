@@ -10,6 +10,7 @@ export default function ManagePage() {
   const [checking, setChecking] = useState(true);
   const [dirs, setDirs] = useState<Directorate[]>([]);
   const [newName, setNewName] = useState('');
+  const [error, setError] = useState('');
   const router = useRouter();
 
   useEffect(() => {
@@ -21,20 +22,24 @@ export default function ManagePage() {
   }, []);
 
   async function loadDirs() {
-    const { data } = await supabase.from('directorates').select('id,name').order('name');
+    const { data, error } = await supabase.from('directorates').select('id,name').order('name');
+    if (error) setError(error.message);
     setDirs(data || []);
   }
 
   async function addDirectorate() {
     if (!newName.trim()) return;
-    await supabase.from('directorates').insert({ name: newName.trim() });
+    const { error } = await supabase.from('directorates').insert({ name: newName.trim() });
+    if (error) { setError(error.message); return; }
+    setError('');
     setNewName('');
     loadDirs();
   }
 
   async function removeDirectorate(id: string) {
     if (!confirm('Remove this directorate and everything under it?')) return;
-    await supabase.from('directorates').delete().eq('id', id);
+    const { error } = await supabase.from('directorates').delete().eq('id', id);
+    if (error) setError(error.message);
     loadDirs();
   }
 
@@ -43,28 +48,29 @@ export default function ManagePage() {
     router.push('/');
   }
 
-  if (checking) return <main><p className="muted">Checking admin access…</p></main>;
+  if (checking) return <p className="muted">Checking admin access…</p>;
 
   return (
-    <main>
-      <div className="row" style={{ justifyContent: 'space-between' }}>
-        <h1 style={{ fontSize: 17 }}>Manage</h1>
-        <button className="ghost" onClick={logout}>Log out</button>
+    <>
+      <div className="mb-3 flex items-center justify-between">
+        <h1 className="text-[17px] font-bold">Manage</h1>
+        <button className="btn-ghost" onClick={logout}>Log out</button>
       </div>
+      {error && <p className="muted mb-2 !text-danger">{error}</p>}
       <div className="card">
         <h2>Directorates</h2>
         {dirs.length === 0 && <p className="muted">No directorates yet.</p>}
         {dirs.map(d => (
-          <div className="pill" key={d.id}>
-            <Link href={`/manage/${d.id}`}>{d.name}</Link>
-            <button className="danger" onClick={() => removeDirectorate(d.id)}>Remove</button>
+          <div className="list-row" key={d.id}>
+            <Link href={`/manage/${d.id}`} className="font-semibold text-accent">{d.name}</Link>
+            <button className="btn-danger" onClick={() => removeDirectorate(d.id)}>Remove</button>
           </div>
         ))}
-        <div className="row" style={{ marginTop: 10 }}>
-          <input placeholder="New directorate name" value={newName} onChange={e => setNewName(e.target.value)} />
-          <button onClick={addDirectorate}>Add</button>
+        <div className="mt-2.5 flex gap-2">
+          <input className="input" placeholder="New directorate name" value={newName} onChange={e => setNewName(e.target.value)} />
+          <button className="btn" onClick={addDirectorate}>Add</button>
         </div>
       </div>
-    </main>
+    </>
   );
 }

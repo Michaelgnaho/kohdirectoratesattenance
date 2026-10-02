@@ -2,15 +2,13 @@ import Link from 'next/link';
 
 export default function Home() {
   return (
-    <main>
-      <div className="card" style={{ textAlign: 'center', marginTop: 40 }}>
-        <h1>Kadri Oba Obafemi</h1>
-        <p className="muted">Directorate meeting attendance</p>
-        <div className="row" style={{ marginTop: 16, flexDirection: 'column', gap: 10 }}>
-          <Link href="/checkin"><button style={{ width: '100%' }}>Check In</button></Link>
-          <Link href="/login"><button className="ghost" style={{ width: '100%' }}>Admin Login</button></Link>
-        </div>
+    <div className="card mt-10 text-center">
+      <h1 className="mb-2 text-2xl font-bold">Kadri Oba Obafemi</h1>
+      <p className="muted">Directorate meeting attendance</p>
+      <div className="mt-4 flex flex-col gap-2.5">
+        <Link href="/checkin" className="btn w-full">Check In</Link>
+        <Link href="/login" className="btn-ghost w-full">Admin Login</Link>
       </div>
-    </main>
+    </div>
   );
 }

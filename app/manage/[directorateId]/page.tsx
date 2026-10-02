@@ -31,6 +31,7 @@ export default function DirectoratePage() {
   const [newMemberRole, setNewMemberRole] = useState('Member');
   const [newMeetTitle, setNewMeetTitle] = useState('');
   const [newMeetDate, setNewMeetDate] = useState('');
+  const [error, setError] = useState('');
 
   useEffect(() => {
     supabase.auth.getUser().then(({ data }) => {
@@ -51,14 +52,16 @@ export default function DirectoratePage() {
 
   async function addMember() {
     if (!newMemberName.trim()) return;
+    let lastError = '';
     for (let attempt = 0; attempt < 5; attempt++) {
-      const code = randomDigits(4);
       const { error } = await supabase.from('members').insert({
-        directorate_id: directorateId, name: newMemberName.trim(), role: newMemberRole, code
+        directorate_id: directorateId, name: newMemberName.trim(), role: newMemberRole, code: randomDigits(4)
       });
-      if (!error) break;
+      if (!error) { lastError = ''; break; }
+      lastError = error.message;
     }
-    setNewMemberName(''); setNewMemberRole('Member');
+    setError(lastError);
+    if (!lastError) { setNewMemberName(''); setNewMemberRole('Member'); }
     load();
   }
 
@@ -69,14 +72,17 @@ export default function DirectoratePage() {
 
   async function addMeeting() {
     if (!newMeetTitle.trim() || !newMeetDate) return;
+    let lastError = '';
     for (let attempt = 0; attempt < 5; attempt++) {
-      const session_code = randomSessionCode(5);
       const { error } = await supabase.from('meetings').insert({
-        directorate_id: directorateId, title: newMeetTitle.trim(), date: newMeetDate, session_code, checkin_open: true
+        directorate_id: directorateId, title: newMeetTitle.trim(), date: newMeetDate,
+        session_code: randomSessionCode(5), checkin_open: true
       });
-      if (!error) break;
+      if (!error) { lastError = ''; break; }
+      lastError = error.message;
     }
-    setNewMeetTitle(''); setNewMeetDate('');
+    setError(lastError);
+    if (!lastError) { setNewMeetTitle(''); setNewMeetDate(''); }
     load();
   }
 
@@ -86,51 +92,51 @@ export default function DirectoratePage() {
     load();
   }
 
-  if (checking) return <main><p className="muted">Checking admin access…</p></main>;
+  if (checking) return <p className="muted">Checking admin access…</p>;
 
   return (
-    <main>
-      <Link href="/manage">‹ All directorates</Link>
+    <>
+      <Link href="/manage" className="mb-3 inline-block font-semibold text-accent">‹ All directorates</Link>
+      {error && <p className="muted mb-2 !text-danger">{error}</p>}
+
       <div className="card">
         <h2>{dirName} — Members</h2>
         {members.length === 0 && <p className="muted">No members yet.</p>}
         {members.map(m => (
           <div className="list-row" key={m.id}>
             <span>{m.name} <span className="muted">· {m.role} · code {m.code}</span></span>
-            <button className="danger" onClick={() => removeMember(m.id)}>Remove</button>
+            <button className="btn-danger" onClick={() => removeMember(m.id)}>Remove</button>
           </div>
         ))}
-        <div className="row" style={{ marginTop: 10 }}>
-          <input placeholder="Member name" value={newMemberName} onChange={e => setNewMemberName(e.target.value)} />
-        </div>
-        <div className="row" style={{ marginTop: 8 }}>
-          <select value={newMemberRole} onChange={e => setNewMemberRole(e.target.value)}>
-            {ROLES.map(r => <option key={r} value={r}>{r}</option>)}
-          </select>
-          <button onClick={addMember}>Add</button>
+        <div className="mt-2.5 space-y-2">
+          <input className="input" placeholder="Member name" value={newMemberName} onChange={e => setNewMemberName(e.target.value)} />
+          <div className="flex gap-2">
+            <select className="input" value={newMemberRole} onChange={e => setNewMemberRole(e.target.value)}>
+              {ROLES.map(r => <option key={r} value={r}>{r}</option>)}
+            </select>
+            <button className="btn" onClick={addMember}>Add</button>
+          </div>
         </div>
       </div>
+
       <div className="card">
         <h2>Meetings</h2>
         {meetings.length === 0 && <p className="muted">No meetings yet.</p>}
         {meetings.map(mt => (
           <div className="list-row" key={mt.id}>
             <Link href={`/manage/meeting/${mt.id}`}>
-              <div style={{ fontWeight: 600, color: 'var(--ink)' }}>{mt.title}</div>
+              <div className="font-semibold text-ink">{mt.title}</div>
               <div className="muted">{mt.date} · code {mt.session_code} · {mt.checkin_open ? 'open' : 'closed'}</div>
             </Link>
-            <button className="danger" onClick={() => removeMeeting(mt.id)}>Delete</button>
+            <button className="btn-danger" onClick={() => removeMeeting(mt.id)}>Delete</button>
           </div>
         ))}
-        <div className="row" style={{ marginTop: 10 }}>
-          <input value={dirName} disabled style={{ opacity: .7 }} />
-        </div>
-        <div className="row" style={{ marginTop: 8 }}>
-          <input placeholder="Meeting title" value={newMeetTitle} onChange={e => setNewMeetTitle(e.target.value)} />
-          <input type="date" value={newMeetDate} onChange={e => setNewMeetDate(e.target.value)} />
-          <button onClick={addMeeting}>Create</button>
+        <div className="mt-2.5 flex flex-wrap gap-2">
+          <input className="input flex-1" placeholder="Meeting title" value={newMeetTitle} onChange={e => setNewMeetTitle(e.target.value)} />
+          <input className="input w-auto" type="date" value={newMeetDate} onChange={e => setNewMeetDate(e.target.value)} />
+          <button className="btn" onClick={addMeeting}>Create</button>
         </div>
       </div>
-    </main>
+    </>
   );
 }
