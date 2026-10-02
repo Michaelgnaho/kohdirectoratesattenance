@@ -1,0 +1,35 @@
+:root {
+  --bg: #f6f5f2; --card: #ffffff; --ink: #1c1a17; --sub: #6b6459; --line: #e5e1d8;
+  --accent: #1f6f4a; --accent-ink: #ffffff; --danger: #b3432b; --radius: 14px;
+}
+@media (prefers-color-scheme: dark) {
+  :root {
+    --bg: #16150f; --card: #211f19; --ink: #f2efe8; --sub: #a49c8c; --line: #38352c;
+    --accent: #3fae7c; --accent-ink: #0c1510; --danger: #e06a4d;
+  }
+}
+* { box-sizing: border-box; }
+html, body { height: 100%; margin: 0; }
+body {
+  background: var(--bg); color: var(--ink);
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+}
+main { max-width: 640px; margin: 0 auto; padding: 20px 16px 40px; }
+h1, h2 { margin: 0 0 10px; }
+h2 { font-size: 14px; text-transform: uppercase; letter-spacing: .5px; color: var(--sub); }
+.card { background: var(--card); border: 1px solid var(--line); border-radius: var(--radius); padding: 16px; margin-bottom: 14px; }
+.row { display: flex; gap: 8px; align-items: center; flex-wrap: wrap; }
+input, select { font: inherit; padding: 9px 11px; border-radius: 9px; border: 1px solid var(--line); background: var(--bg); color: var(--ink); width: 100%; }
+button { font: inherit; padding: 9px 14px; border-radius: 9px; border: none; cursor: pointer; background: var(--accent); color: var(--accent-ink); font-weight: 600; }
+button.ghost { background: transparent; color: var(--ink); border: 1px solid var(--line); font-weight: 500; }
+button.danger { background: transparent; color: var(--danger); border: 1px solid var(--line); font-weight: 500; padding: 6px 10px; font-size: 13px; }
+.pill, .list-row { display: flex; justify-content: space-between; align-items: center; padding: 10px 0; border-bottom: 1px solid var(--line); }
+.pill:last-child, .list-row:last-child { border-bottom: none; }
+.muted { color: var(--sub); font-size: 12.5px; }
+a { color: var(--accent); text-decoration: none; font-weight: 600; }
+.toggle { display: flex; gap: 6px; }
+.toggle button { padding: 6px 12px; font-size: 13px; background: transparent; color: var(--sub); border: 1px solid var(--line); }
+.toggle button.on-present { background: var(--accent); color: var(--accent-ink); border-color: var(--accent); }
+.toggle button.on-absent { background: var(--danger); color: #fff; border-color: var(--danger); }
+.modalOverlay { position: fixed; inset: 0; background: rgba(0,0,0,.55); display: flex; align-items: center; justify-content: center; z-index: 999; padding: 20px; }
+.modalCard { background: var(--card); border-radius: 14px; padding: 22px; max-width: 320px; text-align: center; border: 1px solid var(--line); }
