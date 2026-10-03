@@ -1,5 +1,6 @@
 "use client";
 import { useState } from "react";
+import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { supabase } from "@/lib/supabaseClient";
 
@@ -49,6 +50,12 @@ export default function LoginPage() {
         {loading ? "Logging in…" : "Log In"}
       </button>
       {error && <p className="muted !text-danger">{error}</p>}
+      <Link
+        href="/forgot-password"
+        className="muted inline-block pt-1 underline"
+      >
+        Forgot password?
+      </Link>
       <p className="muted pt-1">Admin accounts are created by a super Admin</p>
     </form>
   );
