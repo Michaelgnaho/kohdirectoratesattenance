@@ -3,27 +3,78 @@
 @tailwind utilities;
 
 :root {
-  --bg: #f6f5f2; --card: #ffffff; --ink: #1c1a17; --sub: #6b6459; --line: #e5e1d8;
-  --accent: #1f6f4a; --accent-ink: #ffffff; --danger: #b3432b;
+  --bg: #f6f5f2;
+  --card: #ffffff;
+  --ink: #1c1a17;
+  --sub: #6b6459;
+  --line: #e5e1d8;
+  --accent: #1f6f4a;
+  --accent-ink: #ffffff;
+  --danger: #b3432b;
 }
 @media (prefers-color-scheme: dark) {
   :root {
-    --bg: #16150f; --card: #211f19; --ink: #f2efe8; --sub: #a49c8c; --line: #38352c;
-    --accent: #3fae7c; --accent-ink: #0c1510; --danger: #e06a4d;
+    --bg: #16150f;
+    --card: #211f19;
+    --ink: #f2efe8;
+    --sub: #a49c8c;
+    --line: #38352c;
+    --accent: #3fae7c;
+    --accent-ink: #0c1510;
+    --danger: #e06a4d;
   }
 }
 
 @layer base {
-  body { @apply bg-bg text-ink antialiased; font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif; }
-  h2 { @apply mb-2.5 text-sm font-semibold uppercase tracking-wide text-sub; }
+  body {
+    @apply text-ink antialiased;
+    background-color: #16150f;
+    font-family:
+      -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial,
+      sans-serif;
+  }
+  h2 {
+    @apply mb-2.5 text-sm font-semibold uppercase tracking-wide text-sub;
+  }
+}
+
+body::before {
+  content: "";
+  position: fixed;
+  inset: 0;
+  z-index: -1;
+  background:
+    linear-gradient(rgba(10, 20, 25, 0.45), rgba(10, 20, 25, 0.55)),
+    url("/bg.jpg") center / cover no-repeat;
 }
 
 @layer components {
-  .card { @apply mb-3.5 rounded-2xl border border-line bg-card p-4; }
-  .input { @apply w-full rounded-lg border border-line bg-bg px-3 py-2.5 text-ink outline-none focus:border-accent focus:ring-1 focus:ring-accent; }
-  .btn { @apply cursor-pointer rounded-lg bg-accent px-4 py-2.5 font-semibold text-accent-ink transition hover:opacity-90 disabled:opacity-50; }
-  .btn-ghost { @apply cursor-pointer rounded-lg border border-line bg-transparent px-4 py-2.5 font-medium text-ink transition hover:opacity-70; }
-  .btn-danger { @apply cursor-pointer rounded-lg border border-line bg-transparent px-2.5 py-1.5 text-[13px] font-medium text-danger transition hover:opacity-70; }
-  .list-row { @apply flex items-center justify-between border-b border-line py-2.5 last:border-b-0; }
-  .muted { @apply text-[12.5px] text-sub; }
+  .on-bg {
+    @apply text-white;
+    text-shadow: 0 1px 3px rgba(0, 0, 0, 0.7);
+  }
+  .notice {
+    @apply rounded-lg bg-card px-3 py-2;
+  }
+  .card {
+    @apply mb-3.5 rounded-2xl border border-line bg-card p-4;
+  }
+  .input {
+    @apply w-full rounded-lg border border-line bg-bg px-3 py-2.5 text-ink outline-none focus:border-accent focus:ring-1 focus:ring-accent;
+  }
+  .btn {
+    @apply cursor-pointer rounded-lg bg-accent px-4 py-2.5 font-semibold text-accent-ink transition hover:opacity-90 disabled:opacity-50;
+  }
+  .btn-ghost {
+    @apply cursor-pointer rounded-lg border border-line bg-card px-4 py-2.5 font-medium text-ink transition hover:opacity-70;
+  }
+  .btn-danger {
+    @apply cursor-pointer rounded-lg border border-line bg-transparent px-2.5 py-1.5 text-[13px] font-medium text-danger transition hover:opacity-70;
+  }
+  .list-row {
+    @apply flex items-center justify-between border-b border-line py-2.5 last:border-b-0;
+  }
+  .muted {
+    @apply text-[12.5px] text-sub;
+  }
 }

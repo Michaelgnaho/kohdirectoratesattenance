@@ -3,11 +3,15 @@ import { useEffect, useState } from 'react';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import { supabase } from '@/lib/supabaseClient';
+import { getMyRole, AdminRole } from '@/lib/adminAuth';
+import NoAccess from '@/components/NoAccess';
 
 type Directorate = { id: string; name: string };
 
 export default function ManagePage() {
   const [checking, setChecking] = useState(true);
+  const [role, setRole] = useState<AdminRole | null>(null);
+  const [loggedIn, setLoggedIn] = useState(false);
   const [dirs, setDirs] = useState<Directorate[]>([]);
   const [newName, setNewName] = useState('');
   const [error, setError] = useState('');
@@ -16,8 +20,12 @@ export default function ManagePage() {
   useEffect(() => {
     supabase.auth.getUser().then(({ data }) => {
       if (!data.user) { router.push('/login'); return; }
-      setChecking(false);
-      loadDirs();
+      setLoggedIn(true);
+      getMyRole().then(r => {
+        setRole(r);
+        setChecking(false);
+        if (r) loadDirs();
+      });
     });
   }, []);
 
@@ -48,15 +56,19 @@ export default function ManagePage() {
     router.push('/');
   }
 
-  if (checking) return <p className="muted">Checking admin access…</p>;
+  if (checking) return <p className="muted on-bg">Checking admin access…</p>;
+  if (loggedIn && !role) return <NoAccess />;
 
   return (
     <>
       <div className="mb-3 flex items-center justify-between">
-        <h1 className="text-[17px] font-bold">Manage</h1>
-        <button className="btn-ghost" onClick={logout}>Log out</button>
+        <h1 className="on-bg text-[17px] font-bold">Manage</h1>
+        <div className="flex gap-2">
+          {role === 'super_admin' && <Link href="/manage/admins" className="btn-ghost">Admins</Link>}
+          <button className="btn-ghost" onClick={logout}>Log out</button>
+        </div>
       </div>
-      {error && <p className="muted mb-2 !text-danger">{error}</p>}
+      {error && <p className="muted notice mb-2 !text-danger">{error}</p>}
       <div className="card">
         <h2>Directorates</h2>
         {dirs.length === 0 && <p className="muted">No directorates yet.</p>}
